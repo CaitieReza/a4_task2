@@ -1,0 +1,86 @@
+---
+title: "A4 Task2 Exploratory Report"
+author: "Caitie Reza"
+date: "11/18/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(janitor)
+library(here)
+```
+
+### Introduction
+
+In this document, I will be using data from the Bonanza Creek Experimental Forest Long Term Ecological Research (LTER) site to explore the counts and sizes of juvenile snowshoe hares, *Lepus americanus*. 
+
+yearly population densities, pellet counts, body size for  across several study sites. 
+
+
+
+
+
+
+
+
+
+
+
+### Data Analysis
+The snowshoe hare data, here named bonanza_hares.csv, is a collection of morphological and population data collected by Knut Keilland, F. Stuart Chapin, Roger Ruess, and Bjorn Flora from 1998 - 2012 at the Bonanza Creek Experimental Forest LTER (see citation below). The dataset consists of *Lepus americanus* sex, age, weight, limb measurements, and individual identification (right and left ear tag) information.   Trap data was used from 3 study sites characterized by habitat type and disturbance level, including bonbs (Bonanza Black Spruce), bonmat (Bonanza mature), and bonrip (Bonanza Riparian). 
+
+
+
+Kielland, K., F.S. Chapin, R.W. Ruess, and Bonanza Creek LTER. 2017. Snowshoe hare physical data in Bonanza Creek Experimental Forest: 1999-Present ver 22. Environmental Data Initiative. 
+
+
+
+
+### Exploratory Findings
+
+#### a) Read In
+Before doing anything else, I will read in the snowshoe hare data (bonanza_hares.csv)
+
+
+
+```{r}
+hare_data <- read_csv(here("data", "bonanza_hares.csv"))
+```
+
+
+#### b) Annual Juvenile Hare Trap Counts
+Here, I will make a subgroup showing year and juvenile hare trap counts called "annual_traps".  First, I'll need to only keep observations for juvenile hares, or the "j" entries in the age column. Then, I'll reformat the dates using the date() function of lubridate. 
+
+Then, I'll create a figure plotting trap counts by year. 
+
+
+```{r}
+annual_traps <- hare_data %>% 
+  filter(age == "j") %>% 
+  mutate("date_new" = mdy(date),
+         "year" = year(date_new)) %>%
+  group_by(year) %>% 
+  count()
+  
+
+
+ggplot(data = annual_traps, aes(x = year, y = n)) +
+  geom_col(aes(fill = "salmon")) +
+  theme_classic() +
+  scale_x_continuous(breaks = c(1999, 2001, 2003, 2005, 2007, 2009, 2011)) +
+  labs(x = "Year", y = "Total Hares Trapped",
+       title = "Annual Juvenile Snowshoe Hare Trap Counts at Bonanza Creek LTER from 1999 - 2012",
+       subtitle = "Data from 3 Study Sites in Bonanza Creek Experimental Forest Long Term Ecological Research Site (Kielland, K. et. al, 2017) ") +
+  theme(legend.position = "none")
+       
+       
+         
+         
+```
+
+
+
