@@ -12,6 +12,8 @@ library(lubridate)
 library(ggplot2)
 library(janitor)
 library(here)
+library(psych)
+library(ggbeeswarm)
 ```
 
 ### Introduction
@@ -42,7 +44,7 @@ Kielland, K., F.S. Chapin, R.W. Ruess, and Bonanza Creek LTER. 2017. Snowshoe ha
 
 ### Exploratory Findings
 
-#### a) Read In
+##### Read In
 Before doing anything else, I will read in the snowshoe hare data (bonanza_hares.csv)
 
 
@@ -52,7 +54,7 @@ hare_data <- read_csv(here("data", "bonanza_hares.csv"))
 ```
 
 
-#### b) Annual Juvenile Hare Trap Counts
+#### i) Annual Juvenile Hare Trap Counts
 Here, I will make a subgroup showing year and juvenile hare trap counts called "annual_traps".  First, I'll need to only keep observations for juvenile hares, or the "j" entries in the age column. Then, I'll reformat the dates using the date() function of lubridate. 
 
 Then, I'll create a figure plotting trap counts by year. 
@@ -65,22 +67,89 @@ annual_traps <- hare_data %>%
          "year" = year(date_new)) %>%
   group_by(year) %>% 
   count()
-  
 
-
-ggplot(data = annual_traps, aes(x = year, y = n)) +
-  geom_col(aes(fill = "salmon")) +
-  theme_classic() +
-  scale_x_continuous(breaks = c(1999, 2001, 2003, 2005, 2007, 2009, 2011)) +
+ggplot(data = annual_traps, aes(x = year, y = n, fill = "salmon")) + geom_col(position = "dodge") +
+  theme_minimal() +
   labs(x = "Year", y = "Total Hares Trapped",
-       title = "Annual Juvenile Snowshoe Hare Trap Counts at Bonanza Creek LTER from 1999 - 2012",
-       subtitle = "Data from 3 Study Sites in Bonanza Creek Experimental Forest Long Term Ecological Research Site (Kielland, K. et. al, 2017) ") +
+       title = "Fig 1. Annual Juvenile Snowshoe Hare Trap Counts at Bonanza Creek LTER from 1999 - 2012",
+       subtitle = "Data from 3 Study Sites in Bonanza Creek Experimental Forest Long Term Ecological Research Site (Kielland, K. et. al, 2017) ", 
+       fill = "Study Site") +
   theme(legend.position = "none")
-       
-       
          
          
 ```
+
+###### **Figure 1.** 
+This figure shows the annual trappings for juvenile snowshoe hares across all three Bonanza Creek study sites from 1998 - 2012. 
+
+
+
+
+##### Fig. 1 Takeaways
+The distribution is left-skewed, with most annual trappings occurring towards the beginning of this time range (maximum of 126 trappings in 1999) and decreasing with time (minimum of 5 in 2007). On average, 31.5 juvenile hares were trapped each year with a standard deviation of 35.88. In the future, it might be helpful to divide observations by the amount of time or trapping effort in order to standardize the population counts. 
+
+
+
+
+#### ii) Visualizing Hare Weights
+Here, I will visualize the relationship between sex and weight of juvenile snowshoe hares trapped at each study site at the Bonanza Creek LTER. First, I'll create a subset of data from hare_data showing only juvenile hares, weight, sex, and site. Then, I will plot weight against 
+
+
+
+```{r}
+sex_weight <- hare_data %>% 
+  filter(age == "j") %>%
+  select(sex, age, weight, grid)
+
+
+ggplot(data = sex_weight, aes(x = sex, y = weight, na.rm = TRUE)) +
+  geom_beeswarm(aes(color = grid)) +
+  facet_wrap(~grid) +
+  geom_boxplot(alpha = .7) +
+  labs(x = "Sex", y = "Weight ()",
+       title = "Figure 2. Sex and Weight of Juvenile Snowshoe Hare",
+       subtitle = "Data from 3 Study Sites in Bonanza Creek Experimental Forest Long Term Ecological Research Site (Kielland, K. et. al, 2017)")
+
+
+
+```
+###### **Figure 2.** 
+This figure shows the relationship between the weight and sex of juvenile snowshoe trapped at three Bonanza Creek LTER study sites from 1998 - 2012. 
+
+
+
+
+##### Figure 2. Takeaways
+FILL IN HERE
+
+
+
+
+
+
+
+
+#### iii) Juvenile Weight Comparison
+Now, I will create a finalized table containing summary statistics comparing male and female populations of snowshoe hares by weight and study site. 
+
+
+
+
+**Figure 3.** shows the mean, standard deviation, and sample size for male and female juvenile snowshoe hares from 3 locales in the Bonanza Creek LTER site.  
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
 
 
 
